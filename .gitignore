@@ -1,0 +1,11 @@
+data/mendeley_zp4nf2dxbh/
+data/zenodo_10433023/
+data/chicken_language/
+data/clips/
+data/*.zip
+data/*.json
+data/*.html
+data/*.js
+results/cv/
+__pycache__/
+.DS_Store
