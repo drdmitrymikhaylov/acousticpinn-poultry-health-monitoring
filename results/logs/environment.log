@@ -1,0 +1,14 @@
+{
+ "python": "3.14.2",
+ "platform": "macOS-26.6.2-arm64-arm-64bit-Mach-O",
+ "machine": "arm64",
+ "numpy": "2.4.0",
+ "scipy": "1.18.1",
+ "torch": "2.9.1",
+ "sklearn": "1.9.0",
+ "soundfile": "0.14.0",
+ "matplotlib": "3.10.8",
+ "torch_device": "mps",
+ "ffmpeg": "ffmpeg version 8.1.2 Copyright (c) 2000-2026 the FFmpeg developers"
+}
+f32c74fc66308e4d1e8bfeff615c89fa610a3910388de89c21030372fee4d913  zenodo_10433023/Laying Hens Vocalization Data Analysis Dec 26 2023.zip  12690105

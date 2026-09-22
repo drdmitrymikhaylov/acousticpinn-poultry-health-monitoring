@@ -3,12 +3,16 @@
   random     -- five stratified folds over clips.  Clips from the same
                 recording land on both sides.  This is what most published
                 poultry-audio results are.
-  recording  -- five folds over whole recordings (GroupKFold).  A clip is
-                scored by a model that never heard its recording.
-  week       -- pullets only: leave one experimental week out.
+  session    -- five folds over whole sessions (GroupKFold).  A session is a
+                recording for the broilers and a cage-hour (all microphones)
+                for the pullets.  A clip is scored by a model that never
+                heard its session.
+  week       -- pullets only: leave one protocol week out.
 
 Per-fold AUC is undefined when a fold holds one class, so out-of-fold scores
-are pooled and scored once.  Resumable: one JSON per (dataset, protocol, fold).
+are pooled and scored once, with a 95 % interval from a bootstrap over
+sessions and a group-level permutation p-value.  Three seeds per fold.
+Resumable: one JSON per (dataset, protocol, fold, seed).
 """
 from __future__ import annotations
 
@@ -24,14 +28,16 @@ from sklearn.model_selection import GroupKFold, StratifiedKFold
 
 sys.path.insert(0, str(pathlib.Path(__file__).parent))
 from model import FlockNet, SR                     # noqa: E402
+from stats import permutation_p_auc, session_bootstrap_auc   # noqa: E402
 
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 CLIPS = ROOT / "data" / "clips"
 RESULTS = ROOT / "results" / "cv"
 EPOCHS = 12
 BATCH = 32
-PROTOCOLS = {"broiler": ("random", "recording"), "pullet": ("random", "recording", "week"),
-             "pullet_control": ("random", "recording", "week")}
+PROTOCOLS = {"broiler": ("random", "session"), "pullet": ("random", "session", "week"),
+             "pullet_control": ("random", "session", "week")}
+SEEDS = (0, 1, 2)
 
 
 def device():
@@ -53,7 +59,7 @@ def load_dataset(name):
         A = np.load(CLIPS / (r["file"] + ".npz"))["X"]
         X.append(A)
         y += [r["y"]] * len(A)
-        rec += [r["group"]] * len(A)
+        rec += [r.get("session", r["group"])] * len(A)          # the split unit
         week += [r.get("week", -1)] * len(A)
         idx += [r.get("index", -1)] * len(A)
     return (np.concatenate(X), np.array(y, dtype=np.int64), np.array(rec),
@@ -64,7 +70,7 @@ def folds_for(protocol, y, rec, week):
     if protocol == "random":
         skf = StratifiedKFold(n_splits=5, shuffle=True, random_state=0)
         return [(f"fold{i}", tr, te) for i, (tr, te) in enumerate(skf.split(y, y))]
-    if protocol == "recording":
+    if protocol == "session":
         gkf = GroupKFold(n_splits=5)
         return [(f"fold{i}", tr, te) for i, (tr, te) in enumerate(gkf.split(y, y, rec))]
     out = []
@@ -111,29 +117,41 @@ def predict(model, X, te, dev):
 
 
 def summarise(dataset):
+    """Pooled over folds; seeds averaged at the clip level; CI over sessions."""
     summary = {}
     for protocol in PROTOCOLS[dataset]:
         rows = [json.loads(f.read_text())
                 for f in sorted(RESULTS.glob(f"{dataset}__{protocol}__*.json"))]
         if not rows:
             continue
-        yy = np.concatenate([r["y"] for r in rows])
-        pp = np.concatenate([r["p"] for r in rows])
+        by_seed = {}
+        for r in rows:
+            by_seed.setdefault(r.get("seed", 0), []).append(r)
+        per_seed = {}
+        for sd, rs in by_seed.items():
+            yy = np.concatenate([r["y"] for r in rs]); pp = np.concatenate([r["p"] for r in rs])
+            gg = np.concatenate([r["groups"] for r in rs])
+            per_seed[sd] = (yy, pp, gg, float(roc_auc_score(yy, pp)))
+        # average the probabilities across seeds, fold by fold (same clips in the same order)
+        seeds = sorted(per_seed)
+        yy, _, gg, _ = per_seed[seeds[0]]
+        pp = np.mean([per_seed[sd][1] for sd in seeds], 0)
+        boot = session_bootstrap_auc(yy, pp, gg)
         summary[protocol] = {
-            "folds": len(rows), "n": int(yy.size),
-            "pooled_auc": float(roc_auc_score(yy, pp)),
+            "folds": len(by_seed[seeds[0]]), "seeds": seeds, "n": int(yy.size),
+            "pooled_auc": boot["pooled_auc"], "ci95": boot["ci95"], "n_sessions": boot["n_groups"],
+            "seed_aucs": [per_seed[sd][3] for sd in seeds],
+            "seed_sd": float(np.std([per_seed[sd][3] for sd in seeds])),
+            "perm_p": permutation_p_auc(yy, pp, gg, n_perm=500),
             "pooled_bal_acc": float(balanced_accuracy_score(yy, (pp >= 0.5).astype(int))),
         }
-        per = [r["auc"] for r in rows if "auc" in r]
-        if per:
-            summary[protocol]["per_fold_auc_mean"] = float(np.mean(per))
-            summary[protocol]["per_fold_auc_sd"] = float(np.std(per))
     return summary
 
 
 def main(datasets=("broiler", "pullet", "pullet_control")):
     RESULTS.mkdir(parents=True, exist_ok=True)
     dev = device()
+    torch.use_deterministic_algorithms(False)
     all_summary = {}
     for ds in datasets:
         X, y, rec, week, _ = load_dataset(ds)
@@ -143,23 +161,25 @@ def main(datasets=("broiler", "pullet", "pullet_control")):
               f"recordings {len(set(rec))}  weeks {sorted(set(week))}", flush=True)
         for protocol in PROTOCOLS[ds]:
             for name, tr, te in folds_for(protocol, y, rec, week):
-                out = RESULTS / f"{ds}__{protocol}__{name}.json"
-                if out.exists():
-                    continue
-                model = FlockNet().to(dev)
-                fit(model, X, y, tr, dev, seed=abs(hash((ds, protocol, name))) % 10_000)
-                p = predict(model, X, te, dev)
-                rec_ = {"dataset": ds, "protocol": protocol, "fold": name,
-                        "n_train": int(len(tr)), "n_test": int(len(te)),
-                        "test_classes": sorted(set(int(v) for v in y[te])),
-                        "y": [int(v) for v in y[te]], "p": [float(v) for v in p]}
-                if len(rec_["test_classes"]) == 2:
-                    rec_["auc"] = float(roc_auc_score(y[te], p))
-                out.write_text(json.dumps(rec_))
-                print("%-8s %-10s %-8s n_test=%5d %s" %
-                      (ds, protocol, name, len(te),
-                       ("auc %.3f" % rec_["auc"]) if "auc" in rec_ else "single-class fold"),
-                      flush=True)
+                for seed in SEEDS:
+                    out = RESULTS / f"{ds}__{protocol}__{name}__s{seed}.json"
+                    if out.exists():
+                        continue
+                    model = FlockNet().to(dev)
+                    fit(model, X, y, tr, dev, seed=1000 * seed + abs(hash((ds, protocol, name))) % 1000)
+                    p = predict(model, X, te, dev)
+                    rec_ = {"dataset": ds, "protocol": protocol, "fold": name, "seed": seed,
+                            "n_train": int(len(tr)), "n_test": int(len(te)),
+                            "test_classes": sorted(set(int(v) for v in y[te])),
+                            "y": [int(v) for v in y[te]], "p": [float(v) for v in p],
+                            "groups": [str(g) for g in rec[te]]}
+                    if len(rec_["test_classes"]) == 2:
+                        rec_["auc"] = float(roc_auc_score(y[te], p))
+                    out.write_text(json.dumps(rec_))
+                    print("%-8s %-10s %-8s seed %d n_test=%5d %s" %
+                          (ds, protocol, name, seed, len(te),
+                           ("auc %.3f" % rec_["auc"]) if "auc" in rec_ else "single-class fold"),
+                          flush=True)
         all_summary[ds] = summarise(ds)
     (ROOT / "results" / "protocol_summary.json").write_text(json.dumps(all_summary, indent=2))
     print(json.dumps(all_summary, indent=2))

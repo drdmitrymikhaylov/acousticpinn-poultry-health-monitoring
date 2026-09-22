@@ -1,0 +1,13 @@
+{
+ "ffmpeg": true,
+ "n_clips": 300,
+ "kbps": 128,
+ "bursts_per_s_wav_median": 1.0,
+ "bursts_per_s_mp3_median": 1.0,
+ "bursts_per_s_wav_mean": 2.308333333333333,
+ "bursts_per_s_mp3_mean": 2.3133333333333335,
+ "burst_share_wav_mean": 0.2936798891317366,
+ "burst_share_mp3_mean": 0.294167847206461,
+ "clips_with_more_bursts_after_mp3": 0.016666666666666666,
+ "clips_with_fewer_bursts_after_mp3": 0.006666666666666667
+}

@@ -15,8 +15,11 @@ Three open sources, none redistributed here (see data/SOURCE.md):
             the bird meant.  Used only for the fundamental-frequency survey.
 
 Every recording is resampled to 16 kHz, cut into two-second clips, and each
-clip is stored with the recording it came from so that the protocols in
-train.py can keep whole recordings on one side of a split.
+clip is stored with the recording AND the session it came from.  For the
+pullets a session is one cage-hour: the files _1.._4 are four microphones
+recording the same birds at the same time, and a split that put position 1
+in training and position 3 in test would be a leak.  The protocols in
+train.py group by session.
 """
 from __future__ import annotations
 
@@ -66,7 +69,7 @@ def broiler_records():
     for cls, y in label.items():
         for p in sorted((root / cls).glob("*.wav"), key=lambda q: int(q.stem)):
             yield {"dataset": "broiler", "path": str(p.relative_to(DATA)), "y": y,
-                   "cls": cls.lower(), "group": f"broiler/{cls}/{p.stem}",
+                   "cls": cls.lower(), "group": f"broiler/{cls}/{p.stem}", "session": f"broiler/{cls}/{p.stem}",
                    "index": int(p.stem)}
 
 
@@ -91,7 +94,9 @@ def pullet_records():
             continue
         ds = "pullet_control" if cond.startswith("c") else "pullet"
         yield {"dataset": ds, "path": str(p.relative_to(DATA)), "y": int(phase == "post"),
-               "cls": phase, "group": f"{ds}/{cond}/W{week}/D{day}/{phase}/{pos}", "week": week, "day": day,
+               "cls": phase, "group": f"{ds}/{cond}/W{week}/D{day}/{phase}/{pos}",
+               "session": f"{ds}/{cond}/W{week}/D{day}/{phase}",       # the four microphones of one hour are ONE observation
+               "week": week, "day": day,
                "age_days": AGE_OFFSET + 7 * (week - 1) + day, "phase": phase, "cond": cond, "position": pos}
 
 

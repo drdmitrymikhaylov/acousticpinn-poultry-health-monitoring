@@ -62,6 +62,19 @@ def test_transient_counter():
     check("a steady tone is not a transient", r_tone == 0.0)
 
 
+def test_session_bootstrap():
+    from stats import session_bootstrap_auc
+    rng = np.random.default_rng(0)
+    g = np.repeat(np.arange(40), 50); y = np.repeat(rng.integers(0, 2, 40), 50)
+    p = y + 0.8 * rng.standard_normal(len(y))
+    r = session_bootstrap_auc(y, p, g, n_boot=200)
+    check("the session bootstrap returns an interval that contains the point estimate and spans 40 sessions",
+          r["ci95"][0] <= r["pooled_auc"] <= r["ci95"][1] and r["n_groups"] == 40)
+    p2 = rng.standard_normal(len(y))
+    r2 = session_bootstrap_auc(y, p2, g, n_boot=200)
+    check("a random score gets an interval that straddles 0.5", r2["ci95"][0] < 0.5 < r2["ci95"][1])
+
+
 def test_source_filter_physics():
     if SourceFilterMixture is None:
         print("skip torch checks (torch not installed)"); return
@@ -98,30 +111,34 @@ def test_source_filter_physics():
               abs(Fz[0, 0] - f0) < 1.0 and Fz[0, 1] < 1e-3)
 
 
-def test_results_are_what_the_page_says():
+def test_readme_numbers_match_results():
     p = ROOT / "results" / "syrinx_pinn.json"
     if not p.exists():
         print("skip results checks (no results/syrinx_pinn.json)"); return
     d = json.loads(p.read_text())
     b = d["datasets"]["broiler"]["protocols"]
-    check("broiler: on a held-out recording, loudness alone separates the two folders (AUC > 0.9)",
-          b["recording"]["loudness_only"]["pooled_auc"] > 0.9)
+    check("broiler: on a held-out session, loudness alone separates the two folders (AUC CI above 0.9)",
+          b["session"]["loudness_only"]["ci95"][0] > 0.9)
     check("broiler: the CNN is at or near 1.0 under both protocols",
           all(v > 0.97 for v in d["cnn_pooled_auc"]["broiler"].values()))
+    check("every AUC on the page carries a session-bootstrap interval",
+          all("ci95" in v for ds in d["datasets"].values() for pr in ds["protocols"].values() for v in pr.values()))
     if "pullet" in d["datasets"]:
         pr = d["datasets"]["pullet"]["protocols"]
-        check("pullet: the physics features and the CNN are both reported under leave-one-week-out",
-              "week" in pr and "week" in d["cnn_pooled_auc"].get("pullet", {}))
+        check("pullet: physics, free-net controls and the CNN are all reported under leave-one-week-out",
+              "week" in pr and "free_net_physics_loss" in pr["week"] and "week" in d["cnn_pooled_auc"].get("pullet", {}))
+    check("the tract length is not sold as identified: its identifiability diagnostic is on the page",
+          "identifiability" in d and "fraction_at_bounds" in d["identifiability"])
     g = ROOT / "results" / "growth_pinn.json"
     if g.exists():
         gg = json.loads(g.read_text())
-        check("growth: the flock fundamental falls with age (Spearman rho < -0.5)",
-              gg["spearman_f0_vs_age"] < -0.5)
+        check("growth: the flock fundamental falls with age (Spearman CI entirely below zero)",
+              gg["bootstrap"]["spearman_ci95"][1] < 0)
 
 
 if __name__ == "__main__":
-    for t in (test_clips_and_padding, test_mel_covers_the_peep, test_transient_counter,
-              test_source_filter_physics, test_results_are_what_the_page_says):
+    for t in (test_clips_and_padding, test_mel_covers_the_peep, test_transient_counter, test_session_bootstrap,
+              test_source_filter_physics, test_readme_numbers_match_results):
         t()
     n = len(PASSED)
     print(f"{sum(PASSED)}/{n} checks passed")

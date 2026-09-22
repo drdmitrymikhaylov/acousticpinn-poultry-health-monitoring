@@ -1,0 +1,19 @@
+ok   a 4.5 s recording gives two whole 2 s clips and no partial one
+ok   a short single call is zero-padded to a clip only when asked
+ok   the mel filterbank covers 150 Hz to 7.5 kHz without a gap
+ok   three 20 ms bursts in two seconds are counted as 1.5 per second
+ok   a steady tone is not a transient
+ok   the session bootstrap returns an interval that contains the point estimate and spans 40 sessions
+ok   a random score gets an interval that straddles 0.5
+ok   a single voice at 1 kHz produces peaks only at integer multiples of 1 kHz
+ok   an 8 cm closed-open tube puts its first formant at c/4L = 1072 Hz (+/- one bin)
+ok   line width scales with harmonic number (relative jitter)
+ok   a clip placed entirely at 1 kHz is read back as f0 = 1 kHz with zero spread
+ok   broiler: on a held-out session, loudness alone separates the two folders (AUC CI above 0.9)
+ok   broiler: the CNN is at or near 1.0 under both protocols
+ok   every AUC on the page carries a session-bootstrap interval
+ok   pullet: physics, free-net controls and the CNN are all reported under leave-one-week-out
+ok   the tract length is not sold as identified: its identifiability diagnostic is on the page
+ok   growth: the flock fundamental falls with age (Spearman CI entirely below zero)
+17/17 checks passed
+ALLDONE

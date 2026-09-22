@@ -1,0 +1,28 @@
+<repo>/src/growth_pinn.py:49: RuntimeWarning: overflow encountered in exp
+  return f0_inf * np.exp(alpha * np.exp(-k * (t - t_i)))
+n=42 of 42 sessions voiced enough; Spearman(f0, age) = -0.35 (p=0.023) CI [-0.65, -0.01]
+  offset sensitivity: [{'offset_days': 0, 'rmse_one_free': 0.14787996677925166, 'rmse_three_free': 0.11745393502757842, 'k_three_free': 0.3902321927782227, 't_i_three_free': 0.6416315207612138}, {'offset_days': 7, 'rmse_one_free': 0.1414156171470734, 'rmse_three_free': 0.1174539350347703, 'k_three_free': 0.39021560437593117, 't_i_three_free': 7.641628343585297}, {'offset_days': 13, 'rmse_one_free': 0.13768144701412321, 'rmse_three_free': 0.11745393504251624, 'k_three_free': 0.39023430952640037, 't_i_three_free': 13.641715559274155}, {'offset_days': 21, 'rmse_one_free': 0.13468531087061647, 'rmse_three_free': 0.11745393504746975, 'k_three_free': 0.3902338082507478, 't_i_three_free': 21.6415905186677}]
+  wilcoxon: {'n_pairs': 16, 'statistic': 53.0, 'p': 0.4637451171875, 'median_ratio': 0.9533581584625339}  control: {'n_pairs': 4, 'median_ratio': 0.9356722570932189}
+  physics_one_free     rmse(log f0) 0.138  f0_inf_hz=541.4 k_per_day=0.02 t_i_days=53 alpha=0.3333 aic=-162.6 bic=-159.1
+  physics_three_free   rmse(log f0) 0.117  f0_inf_hz=907.1 k_per_day=0.3902 t_i_days=13.64 alpha=0.3333 aic=-171.9 bic=-165
+  line_in_log_f0       rmse(log f0) 0.135  slope_per_day=-0.006738 aic=-162.4 bic=-157.1
+  age 14 d trt2       f0 pre 1221 -> post 1201 Hz
+  age 15 d trt1       f0 pre 1249 -> post 1084 Hz
+  age 15 d trt2       f0 pre 1075 -> post 1199 Hz
+  age 21 d trt1       f0 pre 794 -> post 800 Hz
+  age 21 d trt2       f0 pre 1140 -> post 1117 Hz
+  age 22 d trt1       f0 pre 841 -> post 761 Hz
+  age 23 d trt1       f0 pre 765 -> post 726 Hz
+  age 23 d trt2       f0 pre 800 -> post 877 Hz
+  age 28 d trt1       f0 pre 978 -> post 929 Hz
+  age 28 d trt2       f0 pre 953 -> post 911 Hz
+  age 29 d trt1       f0 pre 945 -> post 896 Hz
+  age 29 d trt2       f0 pre 970 -> post 1180 Hz
+  age 35 d ctrl       f0 pre 857 -> post 960 Hz
+  age 35 d trt2       f0 pre 869 -> post 1166 Hz
+  age 36 d ctrl       f0 pre 897 -> post 817 Hz
+  age 36 d trt2       f0 pre 963 -> post 890 Hz
+  age 37 d ctrl       f0 pre 879 -> post 809 Hz
+  age 37 d trt2       f0 pre 1070 -> post 831 Hz
+  age 42 d ctrl       f0 pre 872 -> post 829 Hz
+  age 42 d trt2       f0 pre 962 -> post 896 Hz

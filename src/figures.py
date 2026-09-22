@@ -21,8 +21,9 @@ COL = {"healthy": "#2c6fb0", "unhealthy": "#b0442c", "noise": "#6a6a6a", "pre": 
 NAMES = {"broiler": "broiler chicks (Mendeley zp4nf2dxbh)", "pullet": "layer pullets, stressed cages (Zenodo 10433023)",
          "pullet_control": "layer pullets, control cage"}
 READERS = [("cnn", "log-mel CNN"), ("band_energies", "8 band energies"), ("loudness_only", "loudness only"),
-           ("f0_distribution", "f0 histogram (80 numbers)"), ("physics_6_spectral", "physics, 6 spectral"),
-           ("physics_8_named", "physics, 8 named numbers"), ("transients_only", "transient count only")]
+           ("f0_distribution", "f0 histogram (80 numbers)"), ("physics_7_named", "physics, 7 named numbers"),
+           ("free_net_no_physics", "free net, no physics"), ("free_net_physics_loss", "free net, physics in the loss"),
+           ("transients_only", "burst count only")]
 
 
 def fig1_spectra():
@@ -51,19 +52,23 @@ def fig2_protocols():
         prots = list(pr)
         readers = [(k, lab) for k, lab in READERS if k == "cnn" or k in pr[prots[0]]]
         w = 0.8 / len(readers)
+        cci = s.get("cnn_ci95", {})
         for j, (k, lab) in enumerate(readers):
             vals = [cnn.get(ds, {}).get(p, np.nan) if k == "cnn" else pr[p][k]["pooled_auc"] for p in prots]
+            cis = [(cci.get(ds, {}).get(p) or [np.nan, np.nan]) if k == "cnn" else pr[p][k].get("ci95", [np.nan, np.nan]) for p in prots]
             x = np.arange(len(prots)) + (j - len(readers) / 2 + 0.5) * w
-            ax.bar(x, vals, w, label=lab, color=plt.cm.viridis(j / max(len(readers) - 1, 1)))
+            err = np.array([[v - c[0], c[1] - v] for v, c in zip(vals, cis)]).T
+            ax.bar(x, vals, w, label=lab, color=plt.cm.viridis(j / max(len(readers) - 1, 1)),
+                   yerr=np.where(np.isfinite(err), err, 0), error_kw={"lw": 0.6, "capsize": 1.5})
             for xi, v in zip(x, vals):
                 if np.isfinite(v):
-                    ax.text(xi, v + 0.01, f"{v:.2f}", ha="center", fontsize=5.5, rotation=90)
+                    ax.text(xi, 0.02, f"{v:.2f}", ha="center", va="bottom", fontsize=5, rotation=90, color="w")
         ax.axhline(0.5, color="k", lw=0.8, ls="--")
-        ax.set_xticks(np.arange(len(prots))); ax.set_xticklabels([f"leave-{p}-out" if p != "random" else "random over clips" for p in prots])
-        ax.set_ylim(0, 1.12); ax.set_ylabel("pooled AUC"); ax.set_title(NAMES.get(ds, ds), fontsize=8.5)
-        if ds == dss[0]:
-            ax.legend(fontsize=6.5, ncol=2, loc="lower left")
-    fig.tight_layout(); fig.savefig(FIG / "02_protocols.png"); plt.close(fig)
+        ax.set_xticks(np.arange(len(prots))); ax.set_xticklabels([f"leave-{p}-out" if p != "random" else "random over clips" for p in prots], fontsize=7.5)
+        ax.set_ylim(0, 1.12); ax.set_ylabel("pooled AUC, 95 % CI over sessions"); ax.set_title(NAMES.get(ds, ds), fontsize=8.5)
+    h, l = axes[0][0].get_legend_handles_labels()
+    fig.legend(h, l, fontsize=7, ncol=4, loc="lower center", bbox_to_anchor=(0.5, -0.01))
+    fig.tight_layout(rect=(0, 0.09, 1, 1)); fig.savefig(FIG / "02_protocols.png"); plt.close(fig)
 
 
 def fig3_source_filter():
@@ -99,7 +104,7 @@ def fig3_source_filter():
 def fig4_f0_survey():
     s = json.loads((R / "syrinx_pinn.json").read_text())
     f0 = np.array(s["f0_grid"])
-    fig, ax = plt.subplots(1, 2, figsize=(11, 3.9))
+    fig, ax = plt.subplots(1, 3, figsize=(15.5, 3.9))
     a = ax[0]
     for t, v in s["survey"].items():
         if t == "calls_by_type":
@@ -109,6 +114,21 @@ def fig4_f0_survey():
         a.semilogx(f0, v["p_f0"], lw=1.5, label=f"{lab} (median {v['f0_median_hz']:.0f} Hz, n={v['n']})")
     a.set_xlabel("fundamental f0, Hz"); a.set_ylabel("mean p(f0) over clips"); a.set_title("where the model puts the voices, per source")
     a.legend(fontsize=7)
+    if "survey_wide_grid" in s:
+        wg = s["survey_wide_grid"]; f0w = np.array(wg["f0_grid"])
+        for t in ("broiler", "calls", "pullet"):
+            if t in wg:
+                a.semilogx(f0w, wg[t]["p_f0"], lw=0.8, ls="--", color="k", alpha=0.5)
+        a.plot([], [], ls="--", color="k", alpha=0.5, label="same, on a 150 Hz - 6 kHz grid (grid-sensitivity control)")
+        a.legend(fontsize=6.5)
+    c = ax[2]
+    if "identifiability" in s:
+        idf = s["identifiability"]
+        for prof in idf["loss_profiles"]:
+            c.plot(idf["L_cm_grid"], prof, lw=1.2)
+        c.set_xlabel("tract length L, cm"); c.set_ylabel("log-spectral loss of the clip")
+        c.set_title(f"is the tract length identified? loss over L for three clips\n"
+                    f"{100 * idf['fraction_at_bounds']:.0f} % of clips sit at a bound of the allowed range")
     b = ax[1]
     d = s["datasets"]["broiler"]
     for cls, nm in (("0", "healthy"), ("1", "unhealthy")):
@@ -143,7 +163,10 @@ def fig5_growth():
            label=f"same, k and t_i free: k={g['physics_three_free']['k_per_day']:.3f}/d, t_i={g['physics_three_free']['t_i_days']:.0f} d (rmse {g['physics_three_free']['rmse_log']:.3f})")
     a.plot(tt, g["line_in_log_f0"]["curve_f0"], color="k", lw=1, ls=":", label=f"straight line in log f0 (rmse {g['line_in_log_f0']['rmse_log']:.3f})")
     a.set_xlabel("age, days"); a.set_ylabel("recording's median f0, Hz")
-    a.set_title(f"the flock's fundamental over age, {g['n_recordings']} recordings\nSpearman(f0, age) = {g['spearman_f0_vs_age']:.2f}")
+    ci = g.get("bootstrap", {}).get("spearman_ci95", [np.nan, np.nan])
+    a.set_title(f"the flock's fundamental over age, {g['n_sessions']} sessions"
+                f"{' (voiced clips only)' if not g.get('voiced_rule_relaxed') else ''}\n"
+                f"Spearman(f0, age) = {g['spearman_f0_vs_age']:.2f}, 95 % CI [{ci[0]:.2f}, {ci[1]:.2f}]")
     a.legend(fontsize=5.8, loc="upper right")
     b = ax[1]
     c = g["pre_post_contrast"]
@@ -152,7 +175,10 @@ def fig5_growth():
         b.bar(x, [r["ratio_post_over_pre"] for r in c], color=[COL["control"] if r["cond"].startswith("c") else COL["post"] for r in c])
         b.axhline(1, color="k", lw=0.8)
         b.set_xticks(x); b.set_xticklabels([f"{r['cond']}\n{r['age_days']:.0f} d" for r in c], fontsize=6.5)
-        b.set_ylabel("median f0 after / before the stressor"); b.set_title("the stress contrast at matched age\n(grey: control cage, no stressor)")
+        wt = g.get("wilcoxon_stressed_pairs", {})
+        b.set_ylabel("median f0 after / before the stressor")
+        b.set_title(f"the stress contrast at matched age (grey: control cage)\n"
+                    f"stressed pairs: Wilcoxon p = {wt.get('p', float('nan')):.2f}, n = {wt.get('n_pairs', 0)}")
     fig.tight_layout(); fig.savefig(FIG / "05_growth.png"); plt.close(fig)
 
 

@@ -1,0 +1,306 @@
+broiler: clips 3439  positive 1682  negative 1757  recordings 236  weeks [np.int64(-1)]
+broiler  random     fold0    seed 0 n_test=  688 auc 1.000
+broiler  random     fold0    seed 1 n_test=  688 auc 1.000
+broiler  random     fold0    seed 2 n_test=  688 auc 1.000
+broiler  random     fold1    seed 0 n_test=  688 auc 1.000
+broiler  random     fold1    seed 1 n_test=  688 auc 1.000
+broiler  random     fold1    seed 2 n_test=  688 auc 1.000
+broiler  random     fold2    seed 0 n_test=  688 auc 1.000
+broiler  random     fold2    seed 1 n_test=  688 auc 1.000
+broiler  random     fold2    seed 2 n_test=  688 auc 1.000
+broiler  random     fold3    seed 0 n_test=  688 auc 1.000
+broiler  random     fold3    seed 1 n_test=  688 auc 1.000
+broiler  random     fold3    seed 2 n_test=  688 auc 1.000
+broiler  random     fold4    seed 0 n_test=  687 auc 1.000
+broiler  random     fold4    seed 1 n_test=  687 auc 1.000
+broiler  random     fold4    seed 2 n_test=  687 auc 1.000
+broiler  session    fold0    seed 0 n_test=  688 auc 1.000
+broiler  session    fold0    seed 1 n_test=  688 auc 1.000
+broiler  session    fold0    seed 2 n_test=  688 auc 1.000
+broiler  session    fold1    seed 0 n_test=  688 auc 1.000
+broiler  session    fold1    seed 1 n_test=  688 auc 1.000
+broiler  session    fold1    seed 2 n_test=  688 auc 1.000
+broiler  session    fold2    seed 0 n_test=  688 auc 0.997
+broiler  session    fold2    seed 1 n_test=  688 auc 0.999
+broiler  session    fold2    seed 2 n_test=  688 auc 0.995
+broiler  session    fold3    seed 0 n_test=  688 auc 1.000
+broiler  session    fold3    seed 1 n_test=  688 auc 1.000
+broiler  session    fold3    seed 2 n_test=  688 auc 1.000
+broiler  session    fold4    seed 0 n_test=  687 auc 1.000
+broiler  session    fold4    seed 1 n_test=  687 auc 1.000
+broiler  session    fold4    seed 2 n_test=  687 auc 1.000
+pullet: clips 4200  positive 2100  negative 2100  recordings 34  weeks [np.int64(1), np.int64(2), np.int64(3), np.int64(4), np.int64(5)]
+pullet   random     fold0    seed 0 n_test=  840 auc 0.667
+pullet   random     fold0    seed 1 n_test=  840 auc 0.670
+pullet   random     fold0    seed 2 n_test=  840 auc 0.686
+pullet   random     fold1    seed 0 n_test=  840 auc 0.724
+pullet   random     fold1    seed 1 n_test=  840 auc 0.723
+pullet   random     fold1    seed 2 n_test=  840 auc 0.702
+pullet   random     fold2    seed 0 n_test=  840 auc 0.675
+pullet   random     fold2    seed 1 n_test=  840 auc 0.676
+pullet   random     fold2    seed 2 n_test=  840 auc 0.687
+pullet   random     fold3    seed 0 n_test=  840 auc 0.699
+pullet   random     fold3    seed 1 n_test=  840 auc 0.679
+pullet   random     fold3    seed 2 n_test=  840 auc 0.690
+pullet   random     fold4    seed 0 n_test=  840 auc 0.695
+pullet   random     fold4    seed 1 n_test=  840 auc 0.687
+pullet   random     fold4    seed 2 n_test=  840 auc 0.694
+pullet   session    fold0    seed 0 n_test=  840 auc 0.535
+pullet   session    fold0    seed 1 n_test=  840 auc 0.418
+pullet   session    fold0    seed 2 n_test=  840 auc 0.503
+pullet   session    fold1    seed 0 n_test=  840 auc 0.498
+pullet   session    fold1    seed 1 n_test=  840 auc 0.438
+pullet   session    fold1    seed 2 n_test=  840 auc 0.467
+pullet   session    fold2    seed 0 n_test=  840 auc 0.387
+pullet   session    fold2    seed 1 n_test=  840 auc 0.410
+pullet   session    fold2    seed 2 n_test=  840 auc 0.422
+pullet   session    fold3    seed 0 n_test=  840 auc 0.529
+pullet   session    fold3    seed 1 n_test=  840 auc 0.476
+pullet   session    fold3    seed 2 n_test=  840 auc 0.480
+pullet   session    fold4    seed 0 n_test=  840 auc 0.460
+pullet   session    fold4    seed 1 n_test=  840 auc 0.458
+pullet   session    fold4    seed 2 n_test=  840 auc 0.468
+pullet   week       W1       seed 0 n_test= 1140 auc 0.701
+pullet   week       W1       seed 1 n_test= 1140 auc 0.639
+pullet   week       W1       seed 2 n_test= 1140 auc 0.700
+pullet   week       W2       seed 0 n_test= 1380 auc 0.421
+pullet   week       W2       seed 1 n_test= 1380 auc 0.416
+pullet   week       W2       seed 2 n_test= 1380 auc 0.439
+pullet   week       W3       seed 0 n_test= 1200 auc 0.724
+pullet   week       W3       seed 1 n_test= 1200 auc 0.721
+pullet   week       W3       seed 2 n_test= 1200 auc 0.743
+pullet   week       W4       seed 0 n_test=  360 auc 0.470
+pullet   week       W4       seed 1 n_test=  360 auc 0.449
+pullet   week       W4       seed 2 n_test=  360 auc 0.448
+pullet   week       W5       seed 0 n_test=  120 auc 0.609
+pullet   week       W5       seed 1 n_test=  120 auc 0.573
+pullet   week       W5       seed 2 n_test=  120 auc 0.579
+pullet_control: clips 1920  positive 960  negative 960  recordings 8  weeks [np.int64(4), np.int64(5)]
+pullet_control random     fold0    seed 0 n_test=  384 auc 0.591
+pullet_control random     fold0    seed 1 n_test=  384 auc 0.609
+pullet_control random     fold0    seed 2 n_test=  384 auc 0.613
+pullet_control random     fold1    seed 0 n_test=  384 auc 0.670
+pullet_control random     fold1    seed 1 n_test=  384 auc 0.665
+pullet_control random     fold1    seed 2 n_test=  384 auc 0.667
+pullet_control random     fold2    seed 0 n_test=  384 auc 0.650
+pullet_control random     fold2    seed 1 n_test=  384 auc 0.657
+pullet_control random     fold2    seed 2 n_test=  384 auc 0.623
+pullet_control random     fold3    seed 0 n_test=  384 auc 0.640
+pullet_control random     fold3    seed 1 n_test=  384 auc 0.649
+pullet_control random     fold3    seed 2 n_test=  384 auc 0.654
+pullet_control random     fold4    seed 0 n_test=  384 auc 0.698
+pullet_control random     fold4    seed 1 n_test=  384 auc 0.722
+pullet_control random     fold4    seed 2 n_test=  384 auc 0.698
+pullet_control session    fold0    seed 0 n_test=  480 auc 0.207
+pullet_control session    fold0    seed 1 n_test=  480 auc 0.229
+pullet_control session    fold0    seed 2 n_test=  480 auc 0.239
+pullet_control session    fold1    seed 0 n_test=  480 auc 0.043
+pullet_control session    fold1    seed 1 n_test=  480 auc 0.045
+pullet_control session    fold1    seed 2 n_test=  480 auc 0.041
+pullet_control session    fold2    seed 0 n_test=  480 auc 0.350
+pullet_control session    fold2    seed 1 n_test=  480 auc 0.528
+pullet_control session    fold2    seed 2 n_test=  480 auc 0.372
+pullet_control session    fold3    seed 0 n_test=  240 single-class fold
+pullet_control session    fold3    seed 1 n_test=  240 single-class fold
+pullet_control session    fold3    seed 2 n_test=  240 single-class fold
+pullet_control session    fold4    seed 0 n_test=  240 single-class fold
+pullet_control session    fold4    seed 1 n_test=  240 single-class fold
+pullet_control session    fold4    seed 2 n_test=  240 single-class fold
+pullet_control week       W4       seed 0 n_test= 1440 auc 0.568
+pullet_control week       W4       seed 1 n_test= 1440 auc 0.593
+pullet_control week       W4       seed 2 n_test= 1440 auc 0.564
+pullet_control week       W5       seed 0 n_test=  480 auc 0.550
+pullet_control week       W5       seed 1 n_test=  480 auc 0.518
+pullet_control week       W5       seed 2 n_test=  480 auc 0.509
+{
+  "broiler": {
+    "random": {
+      "folds": 5,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "n": 3439,
+      "pooled_auc": 1.0,
+      "ci95": [
+        0.9999999999999999,
+        1.0
+      ],
+      "n_sessions": 236,
+      "seed_aucs": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "seed_sd": 0.0,
+      "perm_p": 0.001996007984031936,
+      "pooled_bal_acc": 1.0
+    },
+    "session": {
+      "folds": 5,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "n": 3439,
+      "pooled_auc": 0.9988447771678701,
+      "ci95": [
+        0.9959572810451185,
+        1.0
+      ],
+      "n_sessions": 236,
+      "seed_aucs": [
+        0.9989962013674537,
+        0.9990657380669271,
+        0.9983932115939165
+      ],
+      "seed_sd": 0.0003019793731852604,
+      "perm_p": 0.001996007984031936,
+      "pooled_bal_acc": 0.9968569750216054
+    }
+  },
+  "pullet": {
+    "random": {
+      "folds": 5,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "n": 4200,
+      "pooled_auc": 0.694161224489796,
+      "ci95": [
+        0.5633643433415033,
+        0.8014999522500685
+      ],
+      "n_sessions": 34,
+      "seed_aucs": [
+        0.6903621315192745,
+        0.6864190476190477,
+        0.6915342403628117
+      ],
+      "seed_sd": 0.0021880215972726056,
+      "perm_p": 0.007984031936127744,
+      "pooled_bal_acc": 0.6345238095238095
+    },
+    "session": {
+      "folds": 5,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "n": 4200,
+      "pooled_auc": 0.468415873015873,
+      "ci95": [
+        0.3162634323243699,
+        0.6237345067049807
+      ],
+      "n_sessions": 34,
+      "seed_aucs": [
+        0.4834124716553288,
+        0.4564756235827664,
+        0.46918503401360545
+      ],
+      "seed_sd": 0.011002741473696235,
+      "perm_p": 0.6806387225548902,
+      "pooled_bal_acc": 0.4838095238095238
+    },
+    "week": {
+      "folds": 5,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "n": 4200,
+      "pooled_auc": 0.5804201814058957,
+      "ci95": [
+        0.45830998289345065,
+        0.6939130643864423
+      ],
+      "n_sessions": 34,
+      "seed_aucs": [
+        0.5828104308390023,
+        0.5586117913832199,
+        0.5889473922902495
+      ],
+      "seed_sd": 0.013095737770382544,
+      "perm_p": 0.11976047904191617,
+      "pooled_bal_acc": 0.5652380952380953
+    }
+  },
+  "pullet_control": {
+    "random": {
+      "folds": 5,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "n": 1920,
+      "pooled_auc": 0.6540646701388888,
+      "ci95": [
+        0.5678035714285714,
+        0.7512304687499998
+      ],
+      "n_sessions": 8,
+      "seed_aucs": [
+        0.6468641493055556,
+        0.6542643229166667,
+        0.6498383246527777
+      ],
+      "seed_sd": 0.0030404266714934305,
+      "perm_p": 0.02594810379241517,
+      "pooled_bal_acc": 0.609375
+    },
+    "session": {
+      "folds": 5,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "n": 1920,
+      "pooled_auc": 0.18654839409722224,
+      "ci95": [
+        0.06000856481481481,
+        0.3487540509259258
+      ],
+      "n_sessions": 8,
+      "seed_aucs": [
+        0.17522135416666668,
+        0.2103927951388889,
+        0.18900173611111112
+      ],
+      "seed_sd": 0.014470301359555389,
+      "perm_p": 1.0,
+      "pooled_bal_acc": 0.28645833333333337
+    },
+    "week": {
+      "folds": 2,
+      "seeds": [
+        0,
+        1,
+        2
+      ],
+      "n": 1920,
+      "pooled_auc": 0.5441319444444445,
+      "ci95": [
+        0.2123455687830688,
+        0.852722916666666
+      ],
+      "n_sessions": 8,
+      "seed_aucs": [
+        0.545734592013889,
+        0.5563031684027777,
+        0.5422092013888888
+      ],
+      "seed_sd": 0.005988536197836694,
+      "perm_p": 0.31736526946107785,
+      "pooled_bal_acc": 0.5125
+    }
+  }
+}
