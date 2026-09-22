@@ -1,9 +1,10 @@
-"""Log-mel front end and a small convolutional classifier.
+"""Mel-spectrogram input stage plus a compact CNN for clip classification.
 
-The filterbank is written out from the STFT rather than imported, so the whole
-front end is inspectable: 16 kHz audio, 64 mel bands from 100 Hz to 7.6 kHz,
-which covers a chick's peep (fundamental 3-4 kHz) and the broadband rale
-(1-8 kHz) alike.
+Nothing is imported for the front end: the mel filterbank is built here on
+top of the STFT so that every step from waveform to feature can be read.
+Audio is 16 kHz and the 64 mel bands span 100 Hz to 7.6 kHz, wide enough to
+hold both the peep of a chick (fundamental around 3-4 kHz) and the broadband
+rale (1-8 kHz).
 """
 from __future__ import annotations
 

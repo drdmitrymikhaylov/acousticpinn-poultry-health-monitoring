@@ -1,4 +1,4 @@
-"""The flock as a population of source-filter voices, not as a spectrogram.
+"""A spectral mixture in which a flock is many source-filter voices at once.
 
 Terminology, first: this is a physics-based spectral mixture model fitted by
 gradient descent, with a small network for one shape function.  It is not a
