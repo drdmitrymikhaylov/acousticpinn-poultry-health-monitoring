@@ -1,11 +1,20 @@
 cff-version: 1.2.0
 message: "If you use this repository, please cite it as below."
 type: software
-title: "acousticpinn-poultry-health-monitoring"
+title: "AcousticPINN: Poultry House Sound for Health, Stress and Growth Monitoring"
+abstract: "Poultry house sound: broiler health, pullet stress, growth"
 authors:
   - family-names: Mikhaylov
     given-names: Dmitry
     orcid: "https://orcid.org/0009-0009-2108-6820"
+    affiliation: "Abu Dhabi Maritime Academy, AD Ports Group"
 repository-code: "https://github.com/drdmitrymikhaylov/acousticpinn-poultry-health-monitoring"
+url: "https://github.com/drdmitrymikhaylov/acousticpinn-poultry-health-monitoring"
 license: "CC-BY-4.0"
-year: 2026
+keywords:
+  - "bioacoustics"
+  - "physics informed neural networks"
+  - "poultry"
+  - "precision livestock farming"
+  - "pytorch"
+date-released: "2026-09-12"
