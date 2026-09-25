@@ -32,6 +32,10 @@ physical fit. It runs alongside and is scored in the same tables.
 
 ---
 
+## How it started
+
+Poultry acoustics began as an invention: a provisional patent application for hearing a flock's health before the birds show it. This repository takes the idea into the open and puts it through the toughest test I could design: three public datasets, strict session-level validation, and a physical model of the bird's voice set against deep learning.
+
 ## Three recordings, none redistributed
 
 `data/SOURCE.md` says where each source lives, who to cite, and where each
