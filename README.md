@@ -63,7 +63,7 @@ over sessions. Every p-value is a session-level permutation.
 | 1 | **The broiler classes are separable by recording condition, and nothing here can say by what.** The network scores AUC 1.00 on a random split and 1.00 [1.00, 1.00] on sessions it has never heard. Clip loudness alone scores 0.95 [0.91, 0.98]. The dataset's own description explains why that is uninformative: the two classes are two groups of birds in two rooms with two microphones, and the unhealthy class was recorded only after day 30. Room, gain, age and disease are one variable in these files. | One network, three splits |
 | 2 | **An acute stressor leaves nothing this page can measure in 18 minutes of flock sound.** Before-versus-after in the stressed cages, on a held-out week: the network 0.58 [0.46, 0.69], permutation p = 0.12; on held-out sessions 0.47 [0.32, 0.62]. The control cage, where nothing happened between "before" and "after", gives 0.54 [0.21, 0.85] on a held-out week and 0.19 [0.06, 0.35] on held-out sessions. That is below chance, because the network learns which day a clip is from, not whether anything happened. | One network, three splits |
 | 3 | No reading of the sound does better, physical or free. Seven named physical numbers: 0.51 [0.45, 0.55] on held-out sessions, 0.55 [0.50, 0.59] on a held-out week. A free network with the physics as a loss term: 0.52 / 0.55. Without it: 0.51 / 0.54. Every interval crosses 0.5. | A source-filter model of the flock |
-| 4 | **The flock's fundamental falls with age, weakly.** Spearman −0.35, 95 % CI [−0.65, −0.01], over 42 sessions from 14 to 42 days. (v1 reported −0.57 over "102 recordings"; those were microphones, not observations.) A Gompertz-allometry curve with a *published* growth rate and inflection age and one free constant fits it with log-RMSE 0.138. A straight line with two free numbers fits with 0.135 (ΔBIC = +1.9). The two are indistinguishable. Freed, the fit runs to a step at the first week (k = 0.390 /day, CI [0.042, 0.733]; t_i = 14 d, CI [0, 15]). That is a degenerate curve, not a growth parameter. | Growth read from the fundamental |
+| 4 | **The flock's fundamental falls with age, weakly.** Spearman −0.35, 95 % CI [−0.65, −0.01], over 42 sessions from 14 to 42 days. (v1 reported −0.57 over "102 recordings"; those were microphones, not observations.) A Gompertz-allometry curve with a *published* growth rate and inflection age and one free constant fits it with log-RMSE 0.138. A straight line with two free numbers fits with 0.135 (ΔBIC = +1.9). The two are indistinguishable. Freed, the fit runs to a step at the first week (k = 0.390 /day, CI [0.042, 0.733]; t_i = 14 d, CI [0, 15]). That is a degenerate curve, not a growth parameter. *Added 1 October 2026:* the 42 sessions were recorded on 11 days. Resampling whole days gives [−0.71, +0.17] (permutation p = 0.12), and without the two days of the first week the correlation is +0.07. The fall is a drop after week one, not a trend. | Growth read from the fundamental |
 | 5 | The model knows what a voice looks like. It does not know what a chicken is, and two of its numbers are not what they claim. Its "tract length" is not identified by these spectra (14 % of clips sit at a bound of the allowed range, and the loss is flat across it), so it is reported but not used. Its f₀ survey moves with the grid it is given: the broiler median is 898 Hz on the 250 Hz to 4 kHz grid and 402 Hz on 150 Hz to 6 kHz. | A source-filter model of the flock; Where the voices land |
 
 ---
@@ -262,9 +262,10 @@ That is 42 of 42 sessions.
 The direction is there and the discrimination is absent. The fundamental
 falls from about 1201 Hz at 14 days to about 884 Hz at 42, as allometry
 says a growing bird's should. But with the session as the unit the
-correlation is -0.35, with an interval that reaches -0.01. The sign is
-established; the size is not. The curve with the published Hy-Line
-parameters passes through the data with one free number. A straight line
+correlation is -0.35, with an interval that reaches -0.01. At the session
+level the sign is established; the size is not. With the recording day as
+the unit the sign is not established either (last part of this section).
+The curve with the published Hy-Line parameters passes through the data with one free number. A straight line
 in log f₀ does as well (ΔBIC +1.9, below the 2 that would mark a
 preference). The three-parameter fit is a warning rather than a result. It
 lands on k = 0.390 /day with t_i at the first recorded week, a step rather
@@ -273,7 +274,7 @@ than a growth curve, and its bootstrap intervals ([0.042, 0.733] /d,
 inside a nine-week growth curve do not contain the curvature that would
 tell a growth law from a slope. The weeks that would (1 to 2 and 7 to 9)
 are the ones the experiment did not record. What this section can claim is
-the sign of the trend, with its interval. The growth law would need the
+the sign of the trend at the session level, with its interval. The growth law would need the
 whole cycle and a scale.
 
 Age offset: with week 1 day 1 taken as day 0, 7, 13 or 21, the one-free
@@ -287,6 +288,68 @@ control cage in grey. Over the 16 stressed-cage pairs the median ratio is
 0.95 and a Wilcoxon signed-rank test gives p = 0.46. The control cage's 4
 pairs have median ratio 0.94. At this p the direction of the change is not
 established.
+
+### The same trend with the recording day as the unit
+
+*Added 1 October 2026. Computed by `src/growth_units_check.py` from the 42
+session points in `results/growth_pinn.json`; numbers in
+`results/growth_units_check.json`, pinned by `tests/test_growth_units.py`.*
+
+The interval above resamples sessions. But a session is a cage-hour, and the
+42 of them were recorded on 11 days. Sessions of one day share the day, and
+this page has already shown that the day is audible: the control cage's
+network learned it. Differences between days carry 40 % of the variance of
+log f₀, and 27 % once a linear trend in age is removed. At 3.8 sessions a
+day that is a design effect of 1.8, so the 42 sessions are worth about 24
+independent ones.
+
+| unit | n | Spearman | 95 % interval | p |
+|---|---|---|---|---|
+| session, sessions resampled (as published) | 42 | -0.35 | [-0.65, -0.01] | 0.023 |
+| session, whole days resampled | 11 days | -0.35 | [-0.71, +0.17] | 0.12 |
+| day median | 11 | -0.55 | — | 0.083 |
+
+The p in the second row permutes ages between days and keeps each day's
+sessions together (20 000 permutations; 10 000 bootstrap resamples). 90 % of
+the day-level resamples are negative. Re-run here with 10 000 resamples, the
+session bootstrap itself gives [-0.63, -0.00], so the published upper end of
+-0.01 was a third-decimal matter before the unit was questioned.
+
+Where the trend comes from:
+
+| age, days | recording days | sessions | cages | median f₀, Hz | Spearman without this week |
+|---|---|---|---|---|---|
+| 14-15 | 2 | 7 | stressed 1, stressed 2 | 1199 | +0.07 |
+| 21-23 | 3 | 11 | stressed 1, stressed 2 | 800 | -0.70 |
+| 28-29 | 2 | 8 | stressed 1, stressed 2 | 949 | -0.39 |
+| 35-37 | 3 | 12 | stressed 2, control | 885 | -0.42 |
+| 42 | 1 | 4 | stressed 2, control | 884 | -0.35 |
+
+The whole trend is the first recorded week. Its seven sessions sit near
+1200 Hz. Everything after it sits lower and in no order: over the 35
+sessions from day 21 to day 42 the correlation is +0.07 (p = 0.69). Leaving
+out day 14 alone gives -0.20, day 15 alone -0.15. This is what the freed
+three-parameter fit was reporting when it ran to a step at the first week:
+a drop after week one, then flat. The curve with the published growth
+parameters predicts something else over those weeks, a steady fall from
+1019 Hz at day 21 to 820 Hz at day 42 (19 %), while the weekly medians read
+800, 949, 885 and 884 Hz. That curve and the straight line fit equally well
+because both average across the step, not because either describes it.
+
+Only one cage was recorded throughout. Stressed cage 2 has sessions on all
+11 days (21 sessions, -0.56, p = 0.008 with the session as the unit).
+Stressed cage 1 stops at day 29 (13 sessions, -0.27, p = 0.36) and the
+control cage starts at day 35 (8 sessions, -0.34, p = 0.41). The early ages
+are two stressed cages and the late ages are one stressed cage and the
+control, so age and the mix of cages change together.
+
+**What this changes.** Finding 4 said the sign of the trend was established
+and its size was not. With the recording day as the unit the sign is likely
+and not established: the interval reaches +0.17 and p = 0.12. The fall is
+confined to the two days of the first week. A flock's voice may well drop
+between two and three weeks of age. Two recording days cannot separate that
+from anything else that differed between those days and the rest, and the
+files do not say what did.
 
 ---
 
@@ -349,6 +412,12 @@ Seventeen checks in `tests/test_all.py`, all passing:
   that the tract-length diagnostic is present, and that the growth trend's
   interval excludes zero. It does not make the science right. It stops the
   page drifting from the files.
+
+Eight more in `tests/test_growth_units.py` pin the day-level reading of the
+growth trend to `results/growth_units_check.json` and recompute its
+non-random parts from the 42 session points. The session-level interval in
+the check above still excludes zero; the day-level one does not, and both
+are now tested.
 
 ---
 
@@ -423,6 +492,9 @@ are the reason the project's own recordings will be collected differently.
   controls, and the protocol comparison
 - `src/growth_pinn.py` — the Gompertz-allometry curve against published
   growth parameters, with AIC/BIC, bootstrap and offset sensitivity
+- `src/growth_units_check.py` — the same trend with the recording day as
+  the unit: day-level bootstrap and permutation, leave-one-week-out,
+  per-cage trends (reads `results/growth_pinn.json`, needs no audio)
 - `src/environment.py` — `results/environment.json` and
   `data/manifest.sha256`
 - `src/figures.py`, `tests/test_all.py`
@@ -445,6 +517,11 @@ python src/figures.py && python tests/test_all.py
 
 ## Changelog
 
+Dated entries after v2 are in [`CHANGELOG.md`](CHANGELOG.md).
+
+- **1 October 2026** — the growth trend re-read with the recording day as
+  the unit: interval [−0.71, +0.17], and the fall is confined to the first
+  recorded week. Finding 4 qualified.
 - **v2 (September 2026)** — after an internal review. Protocol: the four
   microphones of one cage-hour are one session (the v1 "recording" split
   leaked between them; the v1 pullet number 0.63 is withdrawn). Every AUC
