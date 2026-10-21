@@ -1,5 +1,7 @@
 # What a poultry house says, and what an AI can hear in it
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.23529547.svg)](https://doi.org/10.5281/zenodo.23529547)
+
 Reviews of AI in poultry report respiratory-disease and distress
 classifiers at 94 % and above from audio [1-3]. Almost all of those numbers
 come from random splits of clips recorded in one house. The same reviews
