@@ -63,7 +63,7 @@ over sessions. Every p-value is a session-level permutation.
 | # | Finding | Evidence |
 |---|---------|----------|
 | 1 | **The broiler classes are separable by recording condition, and nothing here can say by what.** The network scores AUC 1.00 on a random split and 1.00 [1.00, 1.00] on sessions it has never heard. Clip loudness alone scores 0.95 [0.91, 0.98]. The dataset's own description explains why that is uninformative: the two classes are two groups of birds in two rooms with two microphones, and the unhealthy class was recorded only after day 30. Room, gain, age and disease are one variable in these files. | One network, three splits |
-| 2 | **An acute stressor leaves nothing this page can measure in 18 minutes of flock sound.** Before-versus-after in the stressed cages, on a held-out week: the network 0.58 [0.46, 0.69], permutation p = 0.12; on held-out sessions 0.47 [0.32, 0.62]. The control cage, where nothing happened between "before" and "after", gives 0.54 [0.21, 0.85] on a held-out week and 0.19 [0.06, 0.35] on held-out sessions. That is below chance, because the network learns which day a clip is from, not whether anything happened. | One network, three splits |
+| 2 | **An acute stressor leaves nothing this page can measure in 18 minutes of flock sound.** Before-versus-after in the stressed cages, on a held-out week: the network 0.58 [0.46, 0.69], permutation p = 0.12; on held-out sessions 0.47 [0.32, 0.62]. The control cage, where nothing happened between "before" and "after", gives 0.54 [0.21, 0.85] on a held-out week and 0.19 [0.06, 0.35] on held-out sessions. That is below chance, because the network learns which day a clip is from, not whether anything happened. *Added 11 November 2026:* read hour by hour, 7 of the 8 control hours are scored like the other half of their day and the 0.19 is the lowest of the 16 within-day relabellings; the stressed cages' 0.47 is not that signature but a coin (6 of 16 cage-days the "after" way). On a held-out week "after" scores above "before" in 12 of 16 cage-days, by +0.03 in probability — and in 3 of 4 in the control cage, by the same amount, with no stressor. | One network, three splits; The pullet network, session by session |
 | 3 | No reading of the sound does better, physical or free. Seven named physical numbers: 0.51 [0.45, 0.55] on held-out sessions, 0.55 [0.50, 0.59] on a held-out week. A free network with the physics as a loss term: 0.52 / 0.55. Without it: 0.51 / 0.54. Every interval crosses 0.5. | A source-filter model of the flock |
 | 4 | **The flock's fundamental falls with age, weakly.** Spearman −0.35, 95 % CI [−0.65, −0.01], over 42 sessions from 14 to 42 days. (v1 reported −0.57 over "102 recordings"; those were microphones, not observations.) A Gompertz-allometry curve with a *published* growth rate and inflection age and one free constant fits it with log-RMSE 0.138. A straight line with two free numbers fits with 0.135 (ΔBIC = +1.9). The two are indistinguishable. Freed, the fit runs to a step at the first week (k = 0.390 /day, CI [0.042, 0.733]; t_i = 14 d, CI [0, 15]). That is a degenerate curve, not a growth parameter. *Added 1 October 2026:* the 42 sessions were recorded on 11 days. Resampling whole days gives [−0.71, +0.17] (permutation p = 0.12), and without the two days of the first week the correlation is +0.07. The fall is a drop after week one, not a trend. | Growth read from the fundamental |
 | 5 | The model knows what a voice looks like. It does not know what a chicken is, and two of its numbers are not what they claim. Its "tract length" is not identified by these spectra (14 % of clips sit at a bound of the allowed range, and the loss is flat across it), so it is reported but not used. Its f₀ survey moves with the grid it is given: the broiler median is 898 Hz on the 250 Hz to 4 kHz grid and 402 Hz on 150 Hz to 6 kHz. | A source-filter model of the flock; Where the voices land |
@@ -131,7 +131,127 @@ found the same signature. With eight sessions in four before/after pairs,
 the network scores a held-out hour by its nearest training hour, which is
 the other half of the same day with the opposite label. A model that had
 learned nothing would sit at 0.5. This one has learned the day, and says
-so.
+so. (Read hour by hour in the next subsection, it does: 7 of the 8 control
+hours are scored like the other half of their day.)
+
+### The pullet network, session by session
+
+*Added 11 November 2026. Computed by `src/session_calls.py` from the
+out-of-fold predictions in `results/cv/` (111 files, now public; the
+pooled AUCs of `results/protocol_summary.json` are reproduced to the digit
+first); numbers in `results/session_calls.json`, pinned by
+`tests/test_session_calls.py`.*
+
+The paragraph above states a mechanism from one pooled number. The stored
+predictions can say whether it is there. For every cage-hour: the
+seed-averaged mean probability of "after", the majority call over its
+clips, and whether its *partner* — the other half of the same cage-day,
+with the opposite label — was in the training set of the fold that scored
+it. The stressed cages have 16 such pairs and two unpartnered hours (the
+other half was not released); the control cage has 4 pairs. Two tests
+follow the design rather than the clip: an exact permutation that swaps
+"before" and "after" *within* each cage-day (all 2¹⁶ = 65 536 relabellings
+for the stressed cages, 16 for the control), which asks whether the
+stressor adds anything to the day; and the pairs themselves, counted.
+
+| cages · protocol | sessions | clip AUC (page) | session-level AUC | called right by majority | partner in training → scored like partner | "after" above "before" (cage-days) | within-day exact p |
+|---|---|---|---|---|---|---|---|
+| stressed cages · session | 34 | 0.47 | 0.48 | 16 of 34 | 16 of 30 | 6 of 16 | 0.342 (below) |
+| stressed cages · week | 34 | 0.58 | 0.59 | 18 of 34 | — | 12 of 16 (1 tie) | 0.118 (above) |
+| control cage · session | 8 | 0.19 | 0.00 | 1 of 8 | 7 of 8 | 0 of 4 | 0.063 (below) |
+| control cage · week | 8 | 0.54 | 0.63 | 4 of 8 | — | 3 of 4 | 0.188 (above) |
+
+"Session-level AUC" ranks the hours by their mean probability. The last
+column is the share of within-day relabellings whose clip AUC is at least
+as far from 0.5, on the side the observed value sits. Under the week
+protocol the two halves of a day are always held out together, so the
+partner column is empty.
+
+| cages · protocol | up / down / ties | sign test, one-sided p | mean "after" − "before" [pair bootstrap 95 %] | median | Wilcoxon p |
+|---|---|---|---|---|---|
+| stressed cages · session | 6 / 10 / 0 | 0.895 | -0.022 [-0.112, +0.074] | -0.091 | 0.86 |
+| stressed cages · week | 12 / 3 / 1 | 0.018 | +0.016 [-0.044, +0.070] | +0.031 | 0.18 |
+| control cage · session | 0 / 4 / 0 | 1.000 | -0.218 [-0.350, -0.131] | -0.173 | 0.13 |
+| control cage · week | 3 / 1 / 0 | 0.313 | +0.030 [-0.027, +0.085] | +0.038 | 0.38 |
+
+Differences are in mean probability per cage-day; a difference under 0.001
+is a tie and is left out of the sign test. The bootstrap resamples the
+pairs (10 000 draws).
+
+Three things follow.
+
+*The control cage did learn the day, exactly as claimed.* All 8 of its
+hours had their partner in training, and 7 of the 8 are scored like the
+partner's label — the wrong way. Ranked by mean probability the network
+puts every "after" hour below every "before" hour (session-level AUC 0.00;
+0 of 4 cage-days the right way; wrong on more than 80 % of the clips in 4
+of 8 hours), and the pooled 0.19 is the lowest of the 16 within-day
+relabellings — the floor four pairs allow, p = 1/16. The pair differences
+are −0.11 to −0.42 with an interval clear of zero.
+
+| hour | label | clips | mean p("after") | clips called "after" | majority |
+|---|---|---|---|---|---|
+| W4/D1/post | after | 240 | 0.447 | 33 % | wrong |
+| W4/D1/pre | before | 240 | 0.642 | 92 % | wrong |
+| W4/D2/post | after | 240 | 0.443 | 49 % | wrong |
+| W4/D2/pre | before | 240 | 0.554 | 53 % | wrong |
+| W4/D3/post | after | 240 | 0.330 | 5 % | wrong |
+| W4/D3/pre | before | 240 | 0.482 | 38 % | right |
+| W5/D1/post | after | 240 | 0.256 | 5 % | wrong |
+| W5/D1/pre | before | 240 | 0.672 | 82 % | wrong |
+
+*The stressed cages' 0.47 is not that signature. It is a coin.* Of the
+hours whose partner was in training, 16 of the 30 are scored like the
+partner and 14 the right way; 6 of 16 cage-days have "after" above "before"; the
+session-level AUC is 0.48; and the observed clip AUC sits in the middle of
+the 65 536 within-day relabellings (34 % below it, 66 % above), which
+themselves range from 0.24 to 0.77 — sixteen pairs can produce a 0.77 by
+chance. The training share of "after" moves only between 0.46 and 0.54
+across folds, so this is not the prior shift that drives the beehive
+repository's below-chance numbers either. With 34 hours on 18 cage-days
+the network could have learned the day here too; the table says it did not
+learn it well enough to show, and learned nothing else.
+
+*On a held-out week the direction is shared and the size is nothing.*
+With whole weeks held out there is no partner to copy, and "after" scores
+above "before" in 12 of the 16 cage-days (3 below, 1 tie; sign test
+p = 0.018, one-sided, one statistic among several here). The size of that
+shift is +0.016 in mean probability, median +0.031, pair-bootstrap
+interval [−0.044, +0.070]; the within-day exact test on the clip AUC gives
+p = 0.118 and the Wilcoxon test 0.18. And the control cage, where nothing
+happened between the two hours, moves the same way by the same amount
+under the same protocol: 3 of 4 cage-days up, +0.030, median +0.038. A
+network that scores the second hour of a day slightly higher than the
+first, stressor or not, is what both tables show.
+
+| cage-day (week protocol) | mean p before | mean p after | difference |
+|---|---|---|---|
+| trt1/W1/D2 | 0.467 | 0.582 | +0.116 |
+| trt1/W2/D1 | 0.379 | 0.418 | +0.039 |
+| trt1/W2/D2 | 0.620 | 0.342 | -0.278 |
+| trt1/W2/D3 | 0.359 | 0.359 | +0.000 |
+| trt1/W3/D1 | 0.461 | 0.478 | +0.017 |
+| trt1/W3/D2 | 0.455 | 0.544 | +0.089 |
+| trt2/W1/D1 | 0.416 | 0.434 | +0.018 |
+| trt2/W1/D2 | 0.347 | 0.524 | +0.176 |
+| trt2/W2/D1 | 0.523 | 0.555 | +0.032 |
+| trt2/W2/D3 | 0.563 | 0.480 | -0.083 |
+| trt2/W3/D1 | 0.464 | 0.493 | +0.029 |
+| trt2/W3/D2 | 0.456 | 0.634 | +0.178 |
+| trt2/W4/D1 | 0.777 | 0.806 | +0.028 |
+| trt2/W4/D2 | 0.685 | 0.484 | -0.201 |
+| trt2/W4/D3 | 0.360 | 0.419 | +0.059 |
+| trt2/W5/D1 | 0.564 | 0.607 | +0.043 |
+
+Finding 2 is amended accordingly. What this does not show: the within-day
+test is the right null for "does the stressor add to the day" and the
+wrong one for "is there a day effect", which the control cage answers on
+its own; the sign test counts direction only and 12 of 16 is what a shift
+of +0.03 on a noisy score produces; the two unpartnered hours are scored
+(one right, one wrong) and enter the AUCs but no pair; the four control
+pairs are four; and the hour order within a day (the stressor came second)
+is confounded with time of day in every pair, which is the reading the
+control cage supports.
 
 ---
 
@@ -421,6 +541,12 @@ non-random parts from the 42 session points. The session-level interval in
 the check above still excludes zero; the day-level one does not, and both
 are now tested.
 
+Eight more in `tests/test_session_calls.py` pin the session-by-session
+reading of the pullet network to `results/session_calls.json`, recompute
+the four pooled AUCs from the 111 files in `results/cv/` exactly as
+`train.summarise` does, and check the control cage's floor (the 0.19 is
+the minimum of the 16 within-day relabellings).
+
 ---
 
 ## Limits
@@ -462,7 +588,7 @@ description does not match what is in the files, I wrote it down in
 `data/SOURCE.md` rather than guessing which is right.
 
 Run times, for anyone repeating this: the mixture model plus the two
-free-network controls took about 8 hours on Apple silicon (MPS) for the
+free-network controls took about 8 hours on a laptop GPU for the
 37 folds, and the CNN about 1.5 hours for three seeds. Because the pullet
 files are MP3 and the broiler files had passed through a lossy format, I
 ran the burst counter through a 128 kb/s round trip before trusting it
@@ -497,20 +623,27 @@ are the reason the project's own recordings will be collected differently.
 - `src/growth_units_check.py` — the same trend with the recording day as
   the unit: day-level bootstrap and permutation, leave-one-week-out,
   per-cage trends (reads `results/growth_pinn.json`, needs no audio)
+- `src/session_calls.py` — the pullet network read session by session
+  from `results/cv/`: majority calls, partner-in-training, session-level
+  AUC, the exact within-day permutation and the paired reading (needs no
+  audio)
 - `src/environment.py` — `results/environment.json` and
   `data/manifest.sha256`
 - `src/figures.py`, `tests/test_all.py`
 
 `results/` holds every number on this page as JSON, the per-fold
-predictions, and the logs of the run that produced them (`results/logs/`).
+predictions (`results/cv/`, 111 files: label, probability and session of
+every clip under every protocol, fold and seed — public since 11 November
+2026; until then this sentence promised them and the folder was held
+back), and the logs of the run that produced them (`results/logs/`).
 `data/SOURCE.md` says how to fetch the recordings; they are not
 redistributed.
 
 ```
 pip install -r requirements.txt
 python src/prepare.py && python src/spectra.py
-python src/train.py                 # ~1.5 h on Apple silicon (3 seeds)
-python src/syrinx_pinn.py           # about 8 h on Apple silicon (MPS) with the free-network controls; set DEVICE=cpu for float64
+python src/train.py                 # ~1.5 h on a laptop GPU (3 seeds)
+python src/syrinx_pinn.py           # about 8 h on a laptop GPU with the free-network controls; set DEVICE=cpu for float64
 python src/growth_pinn.py && python src/transients_check.py
 python src/figures.py && python tests/test_all.py
 ```

@@ -3,6 +3,31 @@
 Dated notes on what changed on this page and why. Newest first. Versions
 v1 and v2 are described in the README.
 
+## 2026-11-11
+
+- New subsection "The pullet network, session by session"
+  (`src/session_calls.py`, `results/session_calls.json`), read from the
+  stored out-of-fold predictions. The control cage did learn the day, as
+  finding 2 claimed: 7 of its 8 hours are scored like the other half of
+  their day, every "after" hour ranks below every "before" hour, and the
+  pooled 0.19 is the lowest of the 16 within-day relabellings (p = 1/16).
+  The stressed cages' 0.47 is not that signature but a coin: 16 of the 30
+  hours with their partner in training are scored like the partner, 6 of
+  16 cage-days have "after" above "before", and the observed AUC sits in
+  the middle of the 65 536 within-day relabellings (0.24 to 0.77).
+- On a held-out week "after" scores above "before" in 12 of 16 cage-days
+  (one tie; sign test p = 0.018 one-sided), by +0.016 in mean probability
+  [−0.044, +0.070] — and the control cage moves the same way by the same
+  amount (3 of 4, +0.030) with no stressor. Finding 2 amended.
+- `results/cv/` published: the 111 per-fold prediction files (label,
+  probability, session for every clip under every protocol, fold and
+  seed). The README's "Reproducing" section had promised them since v2
+  while `.gitignore` kept them out. `tests/test_session_calls.py` (eight
+  tests) recomputes the four pooled pullet AUCs from them exactly as
+  `train.summarise` does and pins the new subsection to `results/`.
+- "Apple silicon (MPS)" in the run-time notes replaced by "a laptop GPU",
+  as in the other repositories.
+
 ## 2026-10-19
 
 - LICENSE now holds the standard MIT text and LICENSE-CONTENT the standard CC BY 4.0 text, so GitHub recognises the licence (it showed "Other" before). The terms are unchanged; the note on what each licence covers moved to `NOTICE.md`.
